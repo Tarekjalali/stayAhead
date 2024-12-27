@@ -43,7 +43,9 @@ userRouter.post('/createAccount', validationCreate, Validation, async (req, res)
       from: process.env.EMAIL_USER,
       to: email,
       subject: 'Your Account Activation Code',
-      text: `Hi ${name},\n\nThank you for signing up! Please use the following code to activate your account:\n\n${activationCode}`,
+      text: `Hi ${name},\n\nThank you for signing up! Please use the following code to activate your account:\n\n${activationCode}\n\n 
+      click the link below to go to the activation page\n\n
+      https://stayahead.onrender.com/Activation`,
     };
 
     transporter.sendMail(mailOptions, (error, info) => {
@@ -64,11 +66,12 @@ userRouter.get('/activate/:code', async (req, res) => {
   try {
     const { code } = req.params;
 
+   
     // Find the user by activationCode
     const user = await User.findOne({ activationCode: code });
 
     if (!user) {
-      return res.status(400).send({ msg: 'Invalid or expired activation code.' });
+      return res.status(400).send({ errors: [{ msg: 'Invalid or expired activation code.' }] });  
     }
 
     // Activate the account
